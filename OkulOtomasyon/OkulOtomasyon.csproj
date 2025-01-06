@@ -1,0 +1,342 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DB224C67-4454-42B8-8FF9-CEAEC16D0B12}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>OkulOtomasyon</RootNamespace>
+    <AssemblyName>OkulOtomasyon</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DevExpress.CodeParser.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Data.Desktop.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Data.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.DataAccess.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Images.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Office.v20.1.Core, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Pdf.v20.1.Core, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Printing.v20.1.Core, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.RichEdit.v20.1.Core, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Utils.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpo.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraBars.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraEditors.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraGrid.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraLayout.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraPrinting.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraRichEdit.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraScheduler.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraScheduler.v20.1.Core, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MySql.Data, Version=8.0.30.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.8.0.30\lib\net452\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.8.0.1\lib\netstandard2.0\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Management" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Loader, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.Loader.4.3.0\lib\netstandard1.5\System.Runtime.Loader.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.AccessControl, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.AccessControl.6.0.0\lib\net461\System.Security.AccessControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.ProtectedData, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.ProtectedData.9.0.0\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Permissions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Permissions.8.0.0\lib\netstandard2.0\System.Security.Permissions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Principal.Windows.5.0.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Text.Encoding.CodePages, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encoding.CodePages.8.0.0\lib\netstandard2.0\System.Text.Encoding.CodePages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.8.0.0\lib\netstandard2.0\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.8.0.4\lib\netstandard2.0\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Ubiety.Dns.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.8.0.30\lib\net452\Ubiety.Dns.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="ZstdNet, Version=1.4.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.8.0.30\lib\net452\ZstdNet.dll</HintPath>
+    </Reference>
+    <Reference Include="ZstdSharp, Version=0.8.0.0, Culture=neutral, PublicKeyToken=8d151af33a4ad5cf, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZstdSharp.Port.0.8.0\lib\netstandard2.0\ZstdSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DersIslemi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DersIslemi.Designer.cs">
+      <DependentUpon>DersIslemi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DersProgramiGoruntule.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DersProgramiGoruntule.Designer.cs">
+      <DependentUpon>DersProgramiGoruntule.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DersProgramiGoruntuleOgrenci.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DersProgramiGoruntuleOgrenci.Designer.cs">
+      <DependentUpon>DersProgramiGoruntuleOgrenci.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DersProgramiGoruntuleOgretmen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DersProgramiGoruntuleOgretmen.Designer.cs">
+      <DependentUpon>DersProgramiGoruntuleOgretmen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DersProgramiOlustur.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DersProgramiOlustur.Designer.cs">
+      <DependentUpon>DersProgramiOlustur.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DevamsizlikGoruntulemeOgrenci.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DevamsizlikGoruntulemeOgrenci.Designer.cs">
+      <DependentUpon>DevamsizlikGoruntulemeOgrenci.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DevamsizlikIslemi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DevamsizlikIslemi.Designer.cs">
+      <DependentUpon>DevamsizlikIslemi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EtkinlikGoruntule.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EtkinlikGoruntule.Designer.cs">
+      <DependentUpon>EtkinlikGoruntule.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EtkinlikIslemi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EtkinlikIslemi.Designer.cs">
+      <DependentUpon>EtkinlikIslemi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Giris.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Giris.Designer.cs">
+      <DependentUpon>Giris.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HosGeldinAdmin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HosGeldinAdmin.Designer.cs">
+      <DependentUpon>HosGeldinAdmin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HosGeldinOgrenci.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HosGeldinOgrenci.Designer.cs">
+      <DependentUpon>HosGeldinOgrenci.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HosGeldinOgretmen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HosGeldinOgretmen.Designer.cs">
+      <DependentUpon>HosGeldinOgretmen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NotGoruntulemeOgrenci.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NotGoruntulemeOgrenci.Designer.cs">
+      <DependentUpon>NotGoruntulemeOgrenci.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NotIslemi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NotIslemi.Designer.cs">
+      <DependentUpon>NotIslemi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OgrenciIslemi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OgrenciIslemi.Designer.cs">
+      <DependentUpon>OgrenciIslemi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OgretmenIslemi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OgretmenIslemi.Designer.cs">
+      <DependentUpon>OgretmenIslemi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Panel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Panel.Designer.cs">
+      <DependentUpon>Panel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ParolaDegis.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ParolaDegis.Designer.cs">
+      <DependentUpon>ParolaDegis.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SinifIslemi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SinifIslemi.Designer.cs">
+      <DependentUpon>SinifIslemi.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="DersIslemi.resx">
+      <DependentUpon>DersIslemi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DersProgramiGoruntule.resx">
+      <DependentUpon>DersProgramiGoruntule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DersProgramiGoruntuleOgrenci.resx">
+      <DependentUpon>DersProgramiGoruntuleOgrenci.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DersProgramiGoruntuleOgretmen.resx">
+      <DependentUpon>DersProgramiGoruntuleOgretmen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DersProgramiOlustur.resx">
+      <DependentUpon>DersProgramiOlustur.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DevamsizlikGoruntulemeOgrenci.resx">
+      <DependentUpon>DevamsizlikGoruntulemeOgrenci.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DevamsizlikIslemi.resx">
+      <DependentUpon>DevamsizlikIslemi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EtkinlikGoruntule.resx">
+      <DependentUpon>EtkinlikGoruntule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EtkinlikIslemi.resx">
+      <DependentUpon>EtkinlikIslemi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Giris.resx">
+      <DependentUpon>Giris.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HosGeldinAdmin.resx">
+      <DependentUpon>HosGeldinAdmin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HosGeldinOgrenci.resx">
+      <DependentUpon>HosGeldinOgrenci.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HosGeldinOgretmen.resx">
+      <DependentUpon>HosGeldinOgretmen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NotGoruntulemeOgrenci.resx">
+      <DependentUpon>NotGoruntulemeOgrenci.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NotIslemi.resx">
+      <DependentUpon>NotIslemi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OgrenciIslemi.resx">
+      <DependentUpon>OgrenciIslemi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OgretmenIslemi.resx">
+      <DependentUpon>OgretmenIslemi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Panel.resx">
+      <DependentUpon>Panel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ParolaDegis.resx">
+      <DependentUpon>ParolaDegis.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="SinifIslemi.resx">
+      <DependentUpon>SinifIslemi.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\education-training-flat-style-school-building-free-png_2292024 %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\okul.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
