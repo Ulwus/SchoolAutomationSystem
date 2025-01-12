@@ -2,12 +2,13 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using OkulOtomasyon.Models;
 
 namespace OkulOtomasyon
 {
     public partial class EtkinlikIslemi : Form
     {
-        MySqlConnection connection = new MySqlConnection("Server=localhost;Database=okulotomasyon;Uid=root;Pwd=ulwus123;");
+        private readonly DatabaseConnection dbConnection = DatabaseConnection.Instance;
 
         public EtkinlikIslemi()
         {
@@ -17,11 +18,15 @@ namespace OkulOtomasyon
 
         public void Listele()
         {
-            string komut = "SELECT * FROM etkinlik";
-            MySqlDataAdapter da = new MySqlDataAdapter(komut, connection);
-            DataSet ds = new DataSet();
-            da.Fill(ds);
-            gridControl1.DataSource = ds.Tables[0];
+            using (var connection = dbConnection.GetConnection())
+            {
+                string komut = "SELECT * FROM etkinlik";
+                MySqlDataAdapter da = new MySqlDataAdapter(komut, connection);
+                DataSet ds = new DataSet();
+                da.Fill(ds);
+                gridControl1.DataSource = ds.Tables[0];
+            }
+            dbConnection.CloseConnection();
         }
 
         private void EtkinlikIslemi_Load(object sender, EventArgs e)
@@ -44,9 +49,7 @@ namespace OkulOtomasyon
         {
             try
             {
-                if (connection.State != ConnectionState.Open)
-                    connection.Open();
-
+                using (var connection = dbConnection.GetConnection())
                 using (MySqlCommand cmd = new MySqlCommand(
                     "INSERT INTO etkinlik (etkinlikIsmi, etkinlikAciklama, etkinlikTarihi, etkinlikYeri) " +
                     "VALUES (@etkinlikIsmi, @etkinlikAciklama, @etkinlikTarihi, @etkinlikYeri)",
@@ -67,7 +70,7 @@ namespace OkulOtomasyon
             }
             finally
             {
-                connection.Close();
+                dbConnection.CloseConnection();
                 Listele();
             }
         }
@@ -76,9 +79,7 @@ namespace OkulOtomasyon
         {
             try
             {
-                if (connection.State != ConnectionState.Open)
-                    connection.Open();
-
+                using (var connection = dbConnection.GetConnection())
                 using (MySqlCommand cmd = new MySqlCommand(
                     "UPDATE etkinlik SET etkinlikIsmi=@isim, etkinlikAciklama=@aciklama, " +
                     "etkinlikTarihi=@tarih, etkinlikYeri=@yer WHERE etkinlikID=@id",
@@ -100,7 +101,7 @@ namespace OkulOtomasyon
             }
             finally
             {
-                connection.Close();
+                dbConnection.CloseConnection();
                 Listele();
             }
         }
@@ -120,12 +121,10 @@ namespace OkulOtomasyon
 
                 if (dr == DialogResult.Yes)
                 {
-                    connection.Open();
-                    string etkinlikID = gridView1.GetFocusedRowCellValue("etkinlikID").ToString();
-
+                    using (var connection = dbConnection.GetConnection())
                     using (MySqlCommand cmd = new MySqlCommand("DELETE FROM etkinlik WHERE etkinlikID = @id", connection))
                     {
-                        cmd.Parameters.AddWithValue("@id", etkinlikID);
+                        cmd.Parameters.AddWithValue("@id", gridView1.GetFocusedRowCellValue("etkinlikID"));
                         cmd.ExecuteNonQuery();
                         MessageBox.Show("Etkinlik başarıyla silindi!");
                     }
@@ -137,7 +136,7 @@ namespace OkulOtomasyon
             }
             finally
             {
-                connection.Close();
+                dbConnection.CloseConnection();
                 Listele();
             }
         }

@@ -1,4 +1,4 @@
-﻿using MySql.Data.MySqlClient;
+using MySql.Data.MySqlClient;
 using System;
 using System.Data;
 using System.Windows.Forms;
@@ -137,9 +137,9 @@ namespace OkulOtomasyon
                     "INSERT INTO account (userName, userPassword, userPermission, userAttachID) VALUES " +
                     "(@userName, @userPassword, @userPermission, @userAttachID)", connection))
                 {
-                    cmdAccount.Parameters.AddWithValue("@userName", textEdit7.Text); 
-                    cmdAccount.Parameters.AddWithValue("@userPassword", "123456"); 
-                    cmdAccount.Parameters.AddWithValue("@userPermission", 0); 
+                    cmdAccount.Parameters.AddWithValue("@userName", textEdit7.Text);
+                    cmdAccount.Parameters.AddWithValue("@userPassword", "123456");
+                    cmdAccount.Parameters.AddWithValue("@userPermission", 0);
                     cmdAccount.Parameters.AddWithValue("@userAttachID", ogrenciID);
 
                     cmdAccount.ExecuteNonQuery();
@@ -285,7 +285,7 @@ namespace OkulOtomasyon
                 {
 
                     var veliIsmi = gridView1.GetFocusedRowCellValue("ogrenciVeliIsmi");
-                    Console.WriteLine($"Çekilen Veli İsmi Değeri: {veliIsmi}"); 
+                    Console.WriteLine($"Çekilen Veli İsmi Değeri: {veliIsmi}");
 
                     // Detaylı null kontrolü
                     if (veliIsmi != null && veliIsmi != DBNull.Value)
@@ -295,7 +295,7 @@ namespace OkulOtomasyon
                     else
                     {
                         textEdit6.Text = string.Empty;
-                        Console.WriteLine("Veli ismi null veya DBNull"); 
+                        Console.WriteLine("Veli ismi null veya DBNull");
                     }
 
 

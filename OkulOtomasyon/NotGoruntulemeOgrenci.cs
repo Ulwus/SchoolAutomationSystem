@@ -6,17 +6,21 @@ using DevExpress.XtraEditors;
 using DevExpress.XtraGrid;
 using DevExpress.XtraGrid.Views.Grid;
 using MySql.Data.MySqlClient;
+using OkulOtomasyon.Models;
 
 public partial class NotGoruntulemeOgrenci : Form
 {
-    private MySqlConnection connection;
+    private DatabaseConnection dbConnection = DatabaseConnection.Instance;
     private int ogrenciID;
-
-    public NotGoruntulemeOgrenci(int ogrID)
+    Account account;
+    Student student;
+    public NotGoruntulemeOgrenci(Account account)
     {
         InitializeComponent();
-        ogrenciID = ogrID;
-        connection = new MySqlConnection("Server=localhost;Database=okulotomasyon;Uid=root;Pwd=ulwus123;");
+        this.account = account;
+        ogrenciID = account.UserAttachID;
+        student = Student.GetById(ogrenciID);
+        
         this.Load += NotGoruntulemeOgrenci_Load_1;
     }
 
@@ -28,27 +32,31 @@ public partial class NotGoruntulemeOgrenci : Form
 
     private void OgrenciBilgileriniGetir()
     {
+
+        lblOgrenciAd.Text = student.OgrenciIsmi + " " + student.OgrenciSoyismi;
+        lblSinif.Text = Convert.ToString(student.OgrenciSinif);
+        lblOgrenciNo.Text = Convert.ToString(student.OgrenciID);
         try
         {
-            connection.Open();
-            string query = @"SELECT o.*, s.sinifName,
+            using (var connection = dbConnection.GetConnection())
+            {
+                string query = @"SELECT o.*, s.sinifName,
                            (SELECT AVG(notDegeri) FROM notlar WHERE ogrenciID = o.ogrenciID) as NotOrtalamasi
                            FROM ogrenci o
                            LEFT JOIN sinif s ON o.ogrenciSinif = s.sinifID
                            WHERE o.ogrenciID = @ogrenciID";
 
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("@ogrenciID", ogrenciID);
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@ogrenciID", ogrenciID);
 
-            MySqlDataReader reader = cmd.ExecuteReader();
-            if (reader.Read())
-            {
-                lblOgrenciAd.Text = $"{reader["ogrenciIsmi"]} {reader["ogrenciSoyismi"]}";
-                lblSinif.Text = $"Sınıf: {reader["sinifName"]}";
-                lblOgrenciNo.Text = $"Öğrenci No: {reader["ogrenciID"]}";
-                lblNotOrt.Text = $"Not Ortalaması: {reader["NotOrtalamasi"]:F2}";
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    
+                    lblNotOrt.Text = $"Not Ortalaması: {reader["NotOrtalamasi"]:F2}";
+                }
+                reader.Close();
             }
-            reader.Close();
         }
         catch (Exception ex)
         {
@@ -56,7 +64,7 @@ public partial class NotGoruntulemeOgrenci : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 
@@ -64,8 +72,9 @@ public partial class NotGoruntulemeOgrenci : Form
     {
         try
         {
-            connection.Open();
-            string query = @"SELECT 
+            using (var connection = dbConnection.GetConnection())
+            {
+                string query = @"SELECT 
                        d.dersIsmi as 'Ders',
                        n.notDegeri as 'Not',
                        DATE_FORMAT(n.notTarihi,'%d.%m.%Y') as 'Tarih',
@@ -80,26 +89,27 @@ public partial class NotGoruntulemeOgrenci : Form
                        INNER JOIN ders d ON n.dersID = d.dersID 
                        ORDER BY n.notTarihi DESC, d.dersIsmi";
 
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("@ogrenciID", ogrenciID);
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@ogrenciID", ogrenciID);
 
-            DataTable dt = new DataTable();
-            new MySqlDataAdapter(cmd).Fill(dt);
+                DataTable dt = new DataTable();
+                new MySqlDataAdapter(cmd).Fill(dt);
 
-            if (dt.Columns.Contains("notTarihi"))
-                dt.Columns.Remove("notTarihi");
+                if (dt.Columns.Contains("notTarihi"))
+                    dt.Columns.Remove("notTarihi");
 
-            gridNotlar.DataSource = dt;
+                gridNotlar.DataSource = dt;
 
-            viewNotlar.Columns["Not ID"].Visible = false;
-            viewNotlar.Columns["Ders ID"].Visible = false;
-            viewNotlar.Columns["Ders"].GroupIndex = 0;
-            viewNotlar.BestFitColumns();
+                viewNotlar.Columns["Not ID"].Visible = false;
+                viewNotlar.Columns["Ders ID"].Visible = false;
+                viewNotlar.Columns["Ders"].GroupIndex = 0;
+                viewNotlar.BestFitColumns();
 
-            foreach (DevExpress.XtraGrid.Columns.GridColumn column in viewNotlar.Columns)
-            {
-                column.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-                column.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                foreach (DevExpress.XtraGrid.Columns.GridColumn column in viewNotlar.Columns)
+                {
+                    column.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                    column.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                }
             }
         }
         catch (Exception ex)
@@ -108,7 +118,7 @@ public partial class NotGoruntulemeOgrenci : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 }

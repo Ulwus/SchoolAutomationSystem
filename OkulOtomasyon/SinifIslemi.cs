@@ -8,12 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using OkulOtomasyon.Models;
 
 namespace OkulOtomasyon
 {
     public partial class SinifIslemi : Form
     {
-        MySqlConnection connection = new MySqlConnection("Server=localhost;Database=okulotomasyon;Uid=root;Pwd=ulwus123;");
+        private DatabaseConnection dbConnection = DatabaseConnection.Instance;
 
         public SinifIslemi()
         {
@@ -25,31 +26,32 @@ namespace OkulOtomasyon
         }
         public void Listele()
         {
-            string komut = "SELECT * FROM sinif";
-            MySqlDataAdapter da = new MySqlDataAdapter(komut, connection);
-            DataSet ds = new DataSet();
-            da.Fill(ds);
-            gridControl1.DataSource = ds.Tables[0];
+            using (var connection = dbConnection.GetConnection())
+            {
+                string komut = "SELECT * FROM sinif";
+                MySqlDataAdapter da = new MySqlDataAdapter(komut, connection);
+                DataSet ds = new DataSet();
+                da.Fill(ds);
+                gridControl1.DataSource = ds.Tables[0];
+            }
         }
 
         public void Ekle()
         {
             try
             {
-                if (connection.State != ConnectionState.Open)
+                using (var connection = dbConnection.GetConnection())
                 {
-                    connection.Open();
-                }
+                    using (MySqlCommand cmd = new MySqlCommand(
+                        "INSERT INTO sinif (sinifName, sinifStudentNumber, sinifYear) VALUES (@sinifName, @sinifStudentNumber, @sinifYear)",
+                        connection))
+                    {
+                        cmd.Parameters.AddWithValue("@sinifName", textEdit1.Text);
+                        cmd.Parameters.AddWithValue("@sinifStudentNumber", textEdit2.Text);
+                        cmd.Parameters.AddWithValue("@sinifYear", textEdit1.Text[0]);
 
-                using (MySqlCommand cmd = new MySqlCommand(
-                    "INSERT INTO sinif (sinifName, sinifStudentNumber, sinifYear) VALUES (@sinifName, @sinifStudentNumber, @sinifYear)",
-                    connection))
-                {
-                    cmd.Parameters.AddWithValue("@sinifName", textEdit1.Text);
-                    cmd.Parameters.AddWithValue("@sinifStudentNumber", textEdit2.Text);
-                    cmd.Parameters.AddWithValue("@sinifYear", textEdit1.Text[0]);
-
-                    cmd.ExecuteNonQuery();
+                        cmd.ExecuteNonQuery();
+                    }
                 }
             }
             catch (Exception ex)
@@ -58,7 +60,7 @@ namespace OkulOtomasyon
             }
             finally
             {
-                connection.Close();
+                dbConnection.CloseConnection();
                 Listele();
             }
         }
@@ -77,34 +79,31 @@ namespace OkulOtomasyon
         {
             try
             {
-                if (connection.State != ConnectionState.Open)
+                using (var connection = dbConnection.GetConnection())
                 {
-                    connection.Open();
-                }
+                    var id = gridView1.GetFocusedRowCellValue("sinifID")?.ToString();
+                    if (string.IsNullOrEmpty(id))
+                    {
+                        MessageBox.Show("Lütfen güncellenecek sınıfı seçin.");
+                        return;
+                    }
 
-                var id = gridView1.GetFocusedRowCellValue("sinifID")?.ToString();
-                if (string.IsNullOrEmpty(id))
-                {
-                    MessageBox.Show("Lütfen güncellenecek sınıfı seçin.");
-                    return;
-                }
+                    string updateQuery = @"UPDATE sinif SET 
+                    sinifName = @sinifName,
+                    sinifStudentNumber = @sinifStudentNumber,
+                    sinifYear = @sinifYear
+                    WHERE sinifID = @sinifID";
 
-                string updateQuery = @"UPDATE sinif SET 
-            sinifName = @sinifName,
-            sinifStudentNumber = @sinifStudentNumber,
-            sinifYear = @sinifYear
-            WHERE sinifID = @sinifID";
+                    using (MySqlCommand cmd = new MySqlCommand(updateQuery, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@sinifID", id);
+                        cmd.Parameters.AddWithValue("@sinifName", textEdit1.Text);
+                        cmd.Parameters.AddWithValue("@sinifStudentNumber", textEdit2.Text);
+                        cmd.Parameters.AddWithValue("@sinifYear", textEdit1.Text[0]);
 
-                using (MySqlCommand cmd = new MySqlCommand(updateQuery, connection))
-                {
-                    cmd.Parameters.AddWithValue("@sinifID", id);
-                    cmd.Parameters.AddWithValue("@sinifName", textEdit1.Text);
-                    cmd.Parameters.AddWithValue("@sinifStudentNumber", textEdit2.Text);
-                    cmd.Parameters.AddWithValue("@sinifYear", textEdit1.Text[0]);
-
-
-                    cmd.ExecuteNonQuery();
-                    MessageBox.Show("Sınıf bilgileri başarıyla güncellendi.");
+                        cmd.ExecuteNonQuery();
+                        MessageBox.Show("Sınıf bilgileri başarıyla güncellendi.");
+                    }
                 }
             }
             catch (Exception ex)
@@ -113,7 +112,7 @@ namespace OkulOtomasyon
             }
             finally
             {
-                connection.Close();
+                dbConnection.CloseConnection();
                 Listele();
             }
         }
@@ -122,23 +121,21 @@ namespace OkulOtomasyon
         {
             try
             {
-                if (connection.State != ConnectionState.Open)
+                using (var connection = dbConnection.GetConnection())
                 {
-                    connection.Open();
-                }
+                    string id = gridView1.GetFocusedRowCellValue("sinifID").ToString();
 
-                string id = gridView1.GetFocusedRowCellValue("sinifID").ToString();
+                    if (string.IsNullOrEmpty(id))
+                    {
+                        MessageBox.Show("Geçerli Bir Sınıf Seç");
+                        return;
+                    }
 
-                if (string.IsNullOrEmpty(id))
-                {
-                    MessageBox.Show("Geçerli Bir Sınıf Seç");
-                    return;
-                }
-
-                using (MySqlCommand cmd = new MySqlCommand("DELETE FROM sinif WHERE sinifID = @sinifID", connection))
-                {
-                    cmd.Parameters.AddWithValue("@sinifID", id);
-                    cmd.ExecuteNonQuery();
+                    using (MySqlCommand cmd = new MySqlCommand("DELETE FROM sinif WHERE sinifID = @sinifID", connection))
+                    {
+                        cmd.Parameters.AddWithValue("@sinifID", id);
+                        cmd.ExecuteNonQuery();
+                    }
                 }
             }
             catch (Exception ex)
@@ -147,7 +144,7 @@ namespace OkulOtomasyon
             }
             finally
             {
-                connection.Close();
+                dbConnection.CloseConnection();
                 Listele();
             }
         }

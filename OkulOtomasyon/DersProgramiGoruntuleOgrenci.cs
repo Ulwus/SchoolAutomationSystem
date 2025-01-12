@@ -6,17 +6,21 @@ using DevExpress.XtraEditors;
 using DevExpress.XtraGrid;
 using DevExpress.XtraGrid.Views.Grid;
 using MySql.Data.MySqlClient;
+using OkulOtomasyon.Models;
 
 public partial class DersProgramiGoruntuleOgrenci : Form
 {
-    private MySqlConnection connection;
+    private DatabaseConnection dbConnection = DatabaseConnection.Instance;
     private int ogrenciID;
+    Account account;
+    Student student;
 
-    public DersProgramiGoruntuleOgrenci(int ogrID)
+    public DersProgramiGoruntuleOgrenci(Account account)
     {
         InitializeComponent();
-        ogrenciID = ogrID;
-        connection = new MySqlConnection("Server=localhost;Database=okulotomasyon;Uid=root;Pwd=ulwus123;");
+        this.account = account;
+        ogrenciID = account.UserAttachID;
+        student = Student.GetById(ogrenciID);
         this.Load += DersProgramiGoruntuleOgrenci_Load;
     }
 
@@ -28,69 +32,48 @@ public partial class DersProgramiGoruntuleOgrenci : Form
 
     private void OgrenciBilgileriniGetir()
     {
-        try
-        {
-            connection.Open();
-            string query = @"SELECT o.*, s.sinifName
-                           FROM ogrenci o
-                           LEFT JOIN sinif s ON o.ogrenciSinif = s.sinifID
-                           WHERE o.ogrenciID = @ogrenciID";
 
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("@ogrenciID", ogrenciID);
-
-            MySqlDataReader reader = cmd.ExecuteReader();
-            if (reader.Read())
-            {
-                lblOgrenciAd.Text = $"{reader["ogrenciIsmi"]} {reader["ogrenciSoyismi"]}";
-                lblSinif.Text = $"Sınıf: {reader["sinifName"]}";
-                lblOgrenciNo.Text = $"Öğrenci No: {reader["ogrenciID"]}";
-            }
-            reader.Close();
-        }
-        catch (Exception ex)
-        {
-            XtraMessageBox.Show("Hata: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-        finally
-        {
-            connection.Close();
-        }
+        lblOgrenciAd.Text = student.OgrenciIsmi + " " + student.OgrenciSoyismi;
+        lblSinif.Text = Convert.ToString(student.OgrenciSinif);
+        lblOgrenciNo.Text = Convert.ToString(student.OgrenciID);
+        
     }
 
     private void DersProgramiGetir()
     {
         try
         {
-            connection.Open();
-            string query = @"SELECT 
-                           dp.gun as 'Gün',
-                           TIME_FORMAT(dp.baslangicSaati,'%H:%i') as 'Başlangıç',
-                           TIME_FORMAT(dp.bitisSaati,'%H:%i') as 'Bitiş',
-                           d.dersIsmi as 'Ders',
-                           CONCAT(o.ogretmenIsim,' ',o.ogretmenSoyisim) as 'Öğretmen',
-                           s.sinifName as 'Sınıf'
-                           FROM ders_programi dp 
-                           JOIN ders d ON dp.dersID = d.dersID 
-                           JOIN ogretmen o ON dp.ogretmenID = o.ogretmenID 
-                           JOIN sinif s ON dp.sinifID = s.sinifID
-                           WHERE dp.sinifID = (SELECT ogrenciSinif FROM ogrenci WHERE ogrenciID = @ogrenciID)
-                           ORDER BY dp.gun, dp.baslangicSaati";
-
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("@ogrenciID", ogrenciID);
-
-            DataTable dt = new DataTable();
-            new MySqlDataAdapter(cmd).Fill(dt);
-            gridDersProgrami.DataSource = dt;
-
-            viewDersProgrami.Columns["Gün"].GroupIndex = 0;
-            viewDersProgrami.BestFitColumns();
-
-            foreach (DevExpress.XtraGrid.Columns.GridColumn column in viewDersProgrami.Columns)
+            using (var connection = dbConnection.GetConnection())
             {
-                column.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-                column.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                string query = @"SELECT 
+                               dp.gun as 'Gün',
+                               TIME_FORMAT(dp.baslangicSaati,'%H:%i') as 'Başlangıç',
+                               TIME_FORMAT(dp.bitisSaati,'%H:%i') as 'Bitiş',
+                               d.dersIsmi as 'Ders',
+                               CONCAT(o.ogretmenIsim,' ',o.ogretmenSoyisim) as 'Öğretmen',
+                               s.sinifName as 'Sınıf'
+                               FROM ders_programi dp 
+                               JOIN ders d ON dp.dersID = d.dersID 
+                               JOIN ogretmen o ON dp.ogretmenID = o.ogretmenID 
+                               JOIN sinif s ON dp.sinifID = s.sinifID
+                               WHERE dp.sinifID = (SELECT ogrenciSinif FROM ogrenci WHERE ogrenciID = @ogrenciID)
+                               ORDER BY dp.gun, dp.baslangicSaati";
+
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@ogrenciID", ogrenciID);
+
+                DataTable dt = new DataTable();
+                new MySqlDataAdapter(cmd).Fill(dt);
+                gridDersProgrami.DataSource = dt;
+
+                viewDersProgrami.Columns["Gün"].GroupIndex = 0;
+                viewDersProgrami.BestFitColumns();
+
+                foreach (DevExpress.XtraGrid.Columns.GridColumn column in viewDersProgrami.Columns)
+                {
+                    column.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                    column.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                }
             }
         }
         catch (Exception ex)
@@ -99,7 +82,7 @@ public partial class DersProgramiGoruntuleOgrenci : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 }

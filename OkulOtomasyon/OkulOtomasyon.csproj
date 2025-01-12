@@ -201,6 +201,10 @@
     <Compile Include="HosGeldinOgretmen.Designer.cs">
       <DependentUpon>HosGeldinOgretmen.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\Account.cs" />
+    <Compile Include="Models\DatabaseConnection.cs" />
+    <Compile Include="Models\Student.cs" />
+    <Compile Include="Models\Teacher.cs" />
     <Compile Include="NotGoruntulemeOgrenci.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -338,5 +342,6 @@
   <ItemGroup>
     <None Include="Resources\okul.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

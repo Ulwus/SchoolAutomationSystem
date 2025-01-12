@@ -171,7 +171,6 @@ public partial class DersProgramiOlustur : Form
         OtomatikDersProgramiOlustur();
     }
 
-    // ...existing code...
     public void OtomatikDersProgramiOlustur()
     {
         string[] gunler = { "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma" };

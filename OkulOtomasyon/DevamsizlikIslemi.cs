@@ -7,11 +7,14 @@ using DevExpress.XtraEditors;
 using DevExpress.XtraGrid.Views.Grid;
 using DevExpress.XtraEditors.Repository;
 using DevExpress.XtraEditors.Controls;
+using OkulOtomasyon.Models;
 
 public partial class DevamsizlikIslemi : Form
 {
-    private MySqlConnection connection;
+    private DatabaseConnection dbConnection = DatabaseConnection.Instance;
     private int ogretmenID;
+    Account account;
+    Teacher teacher;
 
     public class DersItem
     {
@@ -19,12 +22,14 @@ public partial class DevamsizlikIslemi : Form
         public string DersIsmi { get; set; }
         public override string ToString() => DersIsmi;
     }
+    
 
-    public DevamsizlikIslemi(int ogrID)
+    public DevamsizlikIslemi(Account account)
     {
         InitializeComponent();
-        ogretmenID = ogrID;
-        connection = new MySqlConnection("Server=localhost;Database=okulotomasyon;Uid=root;Pwd=ulwus123;");
+        this.account = account;
+        ogretmenID = account.UserAttachID;
+        teacher = Teacher.GetById(ogretmenID);
 
         // Event handler'ları bağla
         this.Load += DevamsizlikIslemi_Load;
@@ -60,56 +65,56 @@ public partial class DevamsizlikIslemi : Form
     {
         try
         {
-            connection.Open();
-
-            // Öğretmenin derslerini getir
-            string dersQuery = @"SELECT DISTINCT d.dersID, d.dersIsmi
+            using (var connection = dbConnection.GetConnection())
+            {
+                string dersQuery = @"SELECT DISTINCT d.dersID, d.dersIsmi
                                FROM ders_programi dp
                                INNER JOIN ders d ON dp.dersID = d.dersID
                                WHERE dp.ogretmenID = @ogretmenID
                                ORDER BY d.dersIsmi";
 
-            using (var cmd = new MySqlCommand(dersQuery, connection))
-            {
-                cmd.Parameters.AddWithValue("@ogretmenID", ogretmenID);
-
-                using (var da = new MySqlDataAdapter(cmd))
+                using (var cmd = new MySqlCommand(dersQuery, connection))
                 {
-                    var dt = new DataTable();
-                    da.Fill(dt);
+                    cmd.Parameters.AddWithValue("@ogretmenID", ogretmenID);
 
-                    cmbDersler.Properties.Items.Clear();
-                    foreach (DataRow row in dt.Rows)
+                    using (var da = new MySqlDataAdapter(cmd))
                     {
-                        cmbDersler.Properties.Items.Add(new DersItem
+                        var dt = new DataTable();
+                        da.Fill(dt);
+
+                        cmbDersler.Properties.Items.Clear();
+                        foreach (DataRow row in dt.Rows)
                         {
-                            DersID = Convert.ToInt32(row["dersID"]),
-                            DersIsmi = row["dersIsmi"].ToString()
-                        });
+                            cmbDersler.Properties.Items.Add(new DersItem
+                            {
+                                DersID = Convert.ToInt32(row["dersID"]),
+                                DersIsmi = row["dersIsmi"].ToString()
+                            });
+                        }
                     }
                 }
-            }
 
-            // Öğretmenin sınıflarını getir
-            string sinifQuery = @"SELECT DISTINCT s.sinifName
+                // Öğretmenin sınıflarını getir
+                string sinifQuery = @"SELECT DISTINCT s.sinifName
                                 FROM ders_programi dp
                                 INNER JOIN sinif s ON dp.sinifID = s.sinifID
                                 WHERE dp.ogretmenID = @ogretmenID
                                 ORDER BY s.sinifName";
 
-            using (var cmd = new MySqlCommand(sinifQuery, connection))
-            {
-                cmd.Parameters.AddWithValue("@ogretmenID", ogretmenID);
-
-                using (var da = new MySqlDataAdapter(cmd))
+                using (var cmd = new MySqlCommand(sinifQuery, connection))
                 {
-                    var dt = new DataTable();
-                    da.Fill(dt);
+                    cmd.Parameters.AddWithValue("@ogretmenID", ogretmenID);
 
-                    cmbSiniflar.Properties.Items.Clear();
-                    foreach (DataRow row in dt.Rows)
+                    using (var da = new MySqlDataAdapter(cmd))
                     {
-                        cmbSiniflar.Properties.Items.Add(row["sinifName"].ToString());
+                        var dt = new DataTable();
+                        da.Fill(dt);
+
+                        cmbSiniflar.Properties.Items.Clear();
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            cmbSiniflar.Properties.Items.Add(row["sinifName"].ToString());
+                        }
                     }
                 }
             }
@@ -121,7 +126,7 @@ public partial class DevamsizlikIslemi : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 
@@ -149,8 +154,9 @@ public partial class DevamsizlikIslemi : Form
 
         try
         {
-            connection.Open();
-            string query = @"SELECT DISTINCT
+            using (var connection = dbConnection.GetConnection())
+            {
+                string query = @"SELECT DISTINCT
                        o.ogrenciID,
                        o.ogrenciIsmi as 'Ad',
                        o.ogrenciSoyismi as 'Soyad',
@@ -166,32 +172,33 @@ public partial class DevamsizlikIslemi : Form
                        AND s.sinifName = @sinifName
                        ORDER BY o.ogrenciIsmi";
 
-            using (var cmd = new MySqlCommand(query, connection))
-            {
-                var selectedDers = cmbDersler.SelectedItem as DersItem;
-                cmd.Parameters.AddWithValue("@dersID", selectedDers.DersID);
-                cmd.Parameters.AddWithValue("@ogretmenID", ogretmenID);
-                cmd.Parameters.AddWithValue("@sinifName", cmbSiniflar.SelectedItem.ToString());
-                cmd.Parameters.AddWithValue("@tarih", Convert.ToDateTime(dateDevamsizlik.EditValue).Date);
-
-                using (var da = new MySqlDataAdapter(cmd))
+                using (var cmd = new MySqlCommand(query, connection))
                 {
-                    var dt = new DataTable();
-                    da.Fill(dt);
-                    gridOgrenciler.DataSource = dt;
+                    var selectedDers = cmbDersler.SelectedItem as DersItem;
+                    cmd.Parameters.AddWithValue("@dersID", selectedDers.DersID);
+                    cmd.Parameters.AddWithValue("@ogretmenID", ogretmenID);
+                    cmd.Parameters.AddWithValue("@sinifName", cmbSiniflar.SelectedItem.ToString());
+                    cmd.Parameters.AddWithValue("@tarih", Convert.ToDateTime(dateDevamsizlik.EditValue).Date);
 
-                    // Repository ayarları
-                    var durumColumn = viewOgrenciler.Columns["Durum"];
-                    if (durumColumn != null)
+                    using (var da = new MySqlDataAdapter(cmd))
                     {
-                        var riCombo = new RepositoryItemComboBox();
-                        riCombo.Items.AddRange(new string[] { "Geldi", "Gelmedi" });
-                        gridOgrenciler.RepositoryItems.Add(riCombo);
-                        durumColumn.ColumnEdit = riCombo;
-                    }
+                        var dt = new DataTable();
+                        da.Fill(dt);
+                        gridOgrenciler.DataSource = dt;
 
-                    viewOgrenciler.Columns["ogrenciID"].Visible = false;
-                    viewOgrenciler.BestFitColumns();
+                        // Repository ayarları
+                        var durumColumn = viewOgrenciler.Columns["Durum"];
+                        if (durumColumn != null)
+                        {
+                            var riCombo = new RepositoryItemComboBox();
+                            riCombo.Items.AddRange(new string[] { "Geldi", "Gelmedi" });
+                            gridOgrenciler.RepositoryItems.Add(riCombo);
+                            durumColumn.ColumnEdit = riCombo;
+                        }
+
+                        viewOgrenciler.Columns["ogrenciID"].Visible = false;
+                        viewOgrenciler.BestFitColumns();
+                    }
                 }
             }
         }
@@ -202,7 +209,7 @@ public partial class DevamsizlikIslemi : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 
@@ -222,15 +229,15 @@ public partial class DevamsizlikIslemi : Form
 
         try
         {
-            connection.Open();
-            var dt = gridOgrenciler.DataSource as DataTable;
-            if (dt == null) return;
-
-            var selectedDers = cmbDersler.SelectedItem as DersItem;
-            var tarih = Convert.ToDateTime(dateDevamsizlik.EditValue).Date;
-
+            using (var connection = dbConnection.GetConnection())
             using (var transaction = connection.BeginTransaction())
             {
+                var dt = gridOgrenciler.DataSource as DataTable;
+                if (dt == null) return;
+
+                var selectedDers = cmbDersler.SelectedItem as DersItem;
+                var tarih = Convert.ToDateTime(dateDevamsizlik.EditValue).Date;
+
                 try
                 {
                     // Önce seçili tarih için tüm kayıtları sil
@@ -285,7 +292,7 @@ public partial class DevamsizlikIslemi : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 

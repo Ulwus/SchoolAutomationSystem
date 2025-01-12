@@ -9,17 +9,19 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using DevExpress.XtraEditors;
 using MySql.Data.MySqlClient;
+using OkulOtomasyon.Models;
 
 namespace OkulOtomasyon
 {
     public partial class Giris : DevExpress.XtraEditors.XtraForm
     {
+        Account account = new Account();
 
-        MySqlConnection connection = new MySqlConnection("Server=localhost;Database=okulotomasyon;Uid=root;Pwd=ulwus123;");
 
         public Giris()
         {
             InitializeComponent();
+
         }
 
         private void svgImageBox1_Click(object sender, EventArgs e)
@@ -31,6 +33,9 @@ namespace OkulOtomasyon
         {
             string userName = textEdit1.Text.Trim();
             string userPassword = textEdit2.Text.Trim();
+            account.UserName = userName;
+            account.UserPassword = userPassword;
+            
 
             if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(userPassword))
             {
@@ -40,29 +45,23 @@ namespace OkulOtomasyon
 
             try
             {
-                connection.Open();
 
-                string query = "SELECT * FROM account WHERE userName = @userName AND userPassword = @userPassword";
-                MySqlCommand cmd = new MySqlCommand(query, connection);
-                cmd.Parameters.AddWithValue("@userName", userName);
-                cmd.Parameters.AddWithValue("@userPassword", userPassword);
 
-                MySqlDataReader dr = cmd.ExecuteReader();
 
-                if (dr.Read())
+                if (account.ValidateLogin(account.UserName, account.UserPassword))
                 {
-                    int userId = Convert.ToInt32(dr["userId"]);
+                    
 
-                    if (dr["userPassword"].ToString() == "123456")
+                    if (account.UserPassword == "123456")
                     {
-                        ParolaDegis parolaDegis = new ParolaDegis(userId);
+                        ParolaDegis parolaDegis = new ParolaDegis(account);
                         parolaDegis.Show();
                         this.Hide();
 
                     }
                     else
                     {
-                        Panel panel = new Panel(userId);
+                        Panel panel = new Panel(account);
                         panel.Show();
                         this.Hide();
                     }
@@ -78,13 +77,7 @@ namespace OkulOtomasyon
             {
                 MessageBox.Show($"Bir hata oluştu: {ex.Message}");
             }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
+
         }
 
         private void Giris_Load(object sender, EventArgs e)

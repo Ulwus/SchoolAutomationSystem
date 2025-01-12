@@ -2,12 +2,13 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using OkulOtomasyon.Models;
 
 namespace OkulOtomasyon
 {
     public partial class DersIslemi : Form
     {
-        MySqlConnection connection = new MySqlConnection("Server=localhost;Database=okulotomasyon;Uid=root;Pwd=ulwus123;");
+        private DatabaseConnection dbConnection = DatabaseConnection.Instance;
 
         public DersIslemi()
         {
@@ -17,11 +18,21 @@ namespace OkulOtomasyon
 
         public void Listele()
         {
-            string komut = "SELECT * FROM ders";
-            MySqlDataAdapter da = new MySqlDataAdapter(komut, connection);
-            DataSet ds = new DataSet();
-            da.Fill(ds);
-            gridControl1.DataSource = ds.Tables[0];
+            try
+            {
+                using (var connection = dbConnection.GetConnection())
+                {
+                    string komut = "SELECT * FROM ders";
+                    MySqlDataAdapter da = new MySqlDataAdapter(komut, connection);
+                    DataSet ds = new DataSet();
+                    da.Fill(ds);
+                    gridControl1.DataSource = ds.Tables[0];
+                }
+            }
+            finally
+            {
+                dbConnection.CloseConnection();
+            }
         }
 
         private void DersIslemi_Load(object sender, EventArgs e)
@@ -43,19 +54,19 @@ namespace OkulOtomasyon
         {
             try
             {
-                if (connection.State != ConnectionState.Open)
-                    connection.Open();
-
-                using (MySqlCommand cmd = new MySqlCommand(
-                    "INSERT INTO ders (dersIsmi, dersAciklama, dersSaat) VALUES (@dersIsmi, @dersAciklama, @dersSaat)",
-                    connection))
+                using (var connection = dbConnection.GetConnection())
                 {
-                    cmd.Parameters.AddWithValue("@dersIsmi", textEdit1.Text);
-                    cmd.Parameters.AddWithValue("@dersAciklama", textEdit2.Text);
-                    cmd.Parameters.AddWithValue("@dersSaat", textEdit3.Text);
+                    using (MySqlCommand cmd = new MySqlCommand(
+                        "INSERT INTO ders (dersIsmi, dersAciklama, dersSaat) VALUES (@dersIsmi, @dersAciklama, @dersSaat)",
+                        connection))
+                    {
+                        cmd.Parameters.AddWithValue("@dersIsmi", textEdit1.Text);
+                        cmd.Parameters.AddWithValue("@dersAciklama", textEdit2.Text);
+                        cmd.Parameters.AddWithValue("@dersSaat", textEdit3.Text);
 
-                    cmd.ExecuteNonQuery();
-                    MessageBox.Show("Ders başarıyla eklendi!");
+                        cmd.ExecuteNonQuery();
+                        MessageBox.Show("Ders başarıyla eklendi!");
+                    }
                 }
             }
             catch (Exception ex)
@@ -64,7 +75,7 @@ namespace OkulOtomasyon
             }
             finally
             {
-                connection.Close();
+                dbConnection.CloseConnection();
                 Listele();
             }
         }
@@ -73,20 +84,20 @@ namespace OkulOtomasyon
         {
             try
             {
-                if (connection.State != ConnectionState.Open)
-                    connection.Open();
-
-                using (MySqlCommand cmd = new MySqlCommand(
-                    "UPDATE ders SET dersIsmi=@isim, dersAciklama=@aciklama, dersSaat=@saat WHERE dersID=@id",
-                    connection))
+                using (var connection = dbConnection.GetConnection())
                 {
-                    cmd.Parameters.AddWithValue("@id", gridView1.GetFocusedRowCellValue("dersID"));
-                    cmd.Parameters.AddWithValue("@isim", textEdit1.Text);
-                    cmd.Parameters.AddWithValue("@aciklama", textEdit2.Text);
-                    cmd.Parameters.AddWithValue("@saat", textEdit3.Text);
+                    using (MySqlCommand cmd = new MySqlCommand(
+                        "UPDATE ders SET dersIsmi=@isim, dersAciklama=@aciklama, dersSaat=@saat WHERE dersID=@id",
+                        connection))
+                    {
+                        cmd.Parameters.AddWithValue("@id", gridView1.GetFocusedRowCellValue("dersID"));
+                        cmd.Parameters.AddWithValue("@isim", textEdit1.Text);
+                        cmd.Parameters.AddWithValue("@aciklama", textEdit2.Text);
+                        cmd.Parameters.AddWithValue("@saat", textEdit3.Text);
 
-                    cmd.ExecuteNonQuery();
-                    MessageBox.Show("Ders bilgileri güncellendi!");
+                        cmd.ExecuteNonQuery();
+                        MessageBox.Show("Ders bilgileri güncellendi!");
+                    }
                 }
             }
             catch (Exception ex)
@@ -95,7 +106,7 @@ namespace OkulOtomasyon
             }
             finally
             {
-                connection.Close();
+                dbConnection.CloseConnection();
                 Listele();
             }
         }
@@ -115,14 +126,16 @@ namespace OkulOtomasyon
 
                 if (dr == DialogResult.Yes)
                 {
-                    connection.Open();
-                    string dersID = gridView1.GetFocusedRowCellValue("dersID").ToString();
-
-                    using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ders WHERE dersID = @id", connection))
+                    using (var connection = dbConnection.GetConnection())
                     {
-                        cmd.Parameters.AddWithValue("@id", dersID);
-                        cmd.ExecuteNonQuery();
-                        MessageBox.Show("Ders başarıyla silindi!");
+                        string dersID = gridView1.GetFocusedRowCellValue("dersID").ToString();
+
+                        using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ders WHERE dersID = @id", connection))
+                        {
+                            cmd.Parameters.AddWithValue("@id", dersID);
+                            cmd.ExecuteNonQuery();
+                            MessageBox.Show("Ders başarıyla silindi!");
+                        }
                     }
                 }
             }
@@ -132,7 +145,7 @@ namespace OkulOtomasyon
             }
             finally
             {
-                connection.Close();
+                dbConnection.CloseConnection();
                 Listele();
             }
         }

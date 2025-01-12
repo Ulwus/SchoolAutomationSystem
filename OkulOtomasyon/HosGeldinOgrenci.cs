@@ -6,22 +6,27 @@ using MySql.Data.MySqlClient;
 using DevExpress.XtraEditors;
 using DevExpress.XtraGrid;
 using DevExpress.XtraGrid.Views.Grid;
+using OkulOtomasyon.Models;
 
 public partial class HosGeldinOgrenci : Form
 {
-    private MySqlConnection connection;
+    private DatabaseConnection dbConnection = DatabaseConnection.Instance;
     private int ogrenciID;
+    Account account;
+    Student student;
 
-    public HosGeldinOgrenci(int ogrID)
+    public HosGeldinOgrenci(Account account)
     {
         InitializeComponent();
-        ogrenciID = ogrID;
-        connection = new MySqlConnection("Server=localhost;Database=okulotomasyon;Uid=root;Pwd=ulwus123;");
+        this.account = account;
+        ogrenciID = account.UserAttachID;
         this.Load += HosGeldinOgrenci_Load;
     }
 
     private void HosGeldinOgrenci_Load(object sender, EventArgs e)
     {
+        student = Student.GetById(ogrenciID);
+
         OgrenciBilgileriniGetir();
         DersProgramiGetir();
         NotlariGetir();
@@ -30,10 +35,16 @@ public partial class HosGeldinOgrenci : Form
 
     private void OgrenciBilgileriniGetir()
     {
+
+        lblOgrenciAd.Text = student.OgrenciIsmi + " " + student.OgrenciSoyismi;
+        lblSinif.Text = Convert.ToString(student.OgrenciSinif);
+        lblOgrenciNo.Text = Convert.ToString(student.OgrenciID);
+
         try
         {
-            connection.Open();
-            string query = @"SELECT o.*, 
+            using (var connection = dbConnection.GetConnection())
+            {
+                string query = @"SELECT o.*, 
                          (SELECT COUNT(*) FROM devamsizlik d WHERE d.ogrenciID = o.ogrenciID) as DevamsizlikSayisi,
                          (SELECT AVG(notDegeri) FROM notlar n WHERE n.ogrenciID = o.ogrenciID) as NotOrtalamasi,
                          s.sinifName
@@ -41,19 +52,18 @@ public partial class HosGeldinOgrenci : Form
                          LEFT JOIN sinif s ON o.ogrenciSinif = s.sinifID
                          WHERE o.ogrenciID = @ogrenciID";
 
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("@ogrenciID", ogrenciID);
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@ogrenciID", ogrenciID);
 
-            MySqlDataReader reader = cmd.ExecuteReader();
-            if (reader.Read())
-            {
-                lblOgrenciAd.Text = $"{reader["ogrenciIsmi"]} {reader["ogrenciSoyismi"]}";
-                lblSinif.Text = $"Sınıf: {reader["sinifName"]}";
-                lblOgrenciNo.Text = $"Öğrenci No: {reader["ogrenciID"]}";
-                lblNotOrt.Text = $"Not Ortalaması: {reader["NotOrtalamasi"]:F2}";
-                lblDevamsizlik.Text = $"Toplam Devamsızlık: {reader["DevamsizlikSayisi"]} gün";
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    
+                    lblNotOrt.Text = $"Not Ortalaması: {reader["NotOrtalamasi"]:F2}";
+                    lblDevamsizlik.Text = $"Toplam Devamsızlık: {reader["DevamsizlikSayisi"]} gün";
+                }
+                reader.Close();
             }
-            reader.Close();
         }
         catch (Exception ex)
         {
@@ -61,7 +71,7 @@ public partial class HosGeldinOgrenci : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 
@@ -69,8 +79,9 @@ public partial class HosGeldinOgrenci : Form
     {
         try
         {
-            connection.Open();
-            string query = @"SELECT 
+            using (var connection = dbConnection.GetConnection())
+            {
+                string query = @"SELECT 
                          dp.gun as 'Gün',
                          TIME_FORMAT(dp.baslangicSaati,'%H:%i') as 'Başlangıç',
                          TIME_FORMAT(dp.bitisSaati,'%H:%i') as 'Bitiş',
@@ -82,20 +93,21 @@ public partial class HosGeldinOgrenci : Form
                          WHERE dp.sinifID = (SELECT ogrenciSinif FROM ogrenci WHERE ogrenciID = @ogrenciID)
                          ORDER BY dp.gun, dp.baslangicSaati";
 
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("@ogrenciID", ogrenciID);
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@ogrenciID", ogrenciID);
 
-            DataTable dt = new DataTable();
-            new MySqlDataAdapter(cmd).Fill(dt);
-            gridDersProgrami.DataSource = dt;
+                DataTable dt = new DataTable();
+                new MySqlDataAdapter(cmd).Fill(dt);
+                gridDersProgrami.DataSource = dt;
 
-            viewDersProgrami.Columns["Gün"].GroupIndex = 0;
-            viewDersProgrami.BestFitColumns();
+                viewDersProgrami.Columns["Gün"].GroupIndex = 0;
+                viewDersProgrami.BestFitColumns();
 
-            foreach (DevExpress.XtraGrid.Columns.GridColumn column in viewDersProgrami.Columns)
-            {
-                column.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-                column.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                foreach (DevExpress.XtraGrid.Columns.GridColumn column in viewDersProgrami.Columns)
+                {
+                    column.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                    column.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                }
             }
         }
         catch (Exception ex)
@@ -104,7 +116,7 @@ public partial class HosGeldinOgrenci : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 
@@ -112,8 +124,9 @@ public partial class HosGeldinOgrenci : Form
     {
         try
         {
-            connection.Open();
-            string query = @"SELECT 
+            using (var connection = dbConnection.GetConnection())
+            {
+                string query = @"SELECT 
                          d.dersIsmi as 'Ders',
                          n.notDegeri as 'Not',
                          DATE_FORMAT(n.notTarihi,'%d.%m.%Y') as 'Tarih'
@@ -122,18 +135,19 @@ public partial class HosGeldinOgrenci : Form
                          WHERE n.ogrenciID = @ogrenciID
                          ORDER BY n.notTarihi DESC";
 
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("@ogrenciID", ogrenciID);
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@ogrenciID", ogrenciID);
 
-            DataTable dt = new DataTable();
-            new MySqlDataAdapter(cmd).Fill(dt);
-            gridNotlar.DataSource = dt;
-            viewNotlar.BestFitColumns();
+                DataTable dt = new DataTable();
+                new MySqlDataAdapter(cmd).Fill(dt);
+                gridNotlar.DataSource = dt;
+                viewNotlar.BestFitColumns();
 
-            foreach (DevExpress.XtraGrid.Columns.GridColumn column in viewNotlar.Columns)
-            {
-                column.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-                column.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                foreach (DevExpress.XtraGrid.Columns.GridColumn column in viewNotlar.Columns)
+                {
+                    column.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                    column.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                }
             }
         }
         catch (Exception ex)
@@ -142,7 +156,7 @@ public partial class HosGeldinOgrenci : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 
@@ -150,8 +164,9 @@ public partial class HosGeldinOgrenci : Form
     {
         try
         {
-            connection.Open();
-            string query = @"SELECT 
+            using (var connection = dbConnection.GetConnection())
+            {
+                string query = @"SELECT 
                          etkinlikIsmi as 'Etkinlik',
                          DATE_FORMAT(etkinlikTarihi,'%d.%m.%Y') as 'Tarih',
                          etkinlikYeri as 'Yer',
@@ -161,17 +176,18 @@ public partial class HosGeldinOgrenci : Form
                          ORDER BY etkinlikTarihi 
                          LIMIT 5";
 
-            MySqlCommand cmd = new MySqlCommand(query, connection);
+                MySqlCommand cmd = new MySqlCommand(query, connection); // Bağlantıyı ekledik
+                
+                DataTable dt = new DataTable();
+                new MySqlDataAdapter(cmd).Fill(dt);
+                gridEtkinlikler.DataSource = dt;
+                viewEtkinlikler.BestFitColumns();
 
-            DataTable dt = new DataTable();
-            new MySqlDataAdapter(cmd).Fill(dt);
-            gridEtkinlikler.DataSource = dt;
-            viewEtkinlikler.BestFitColumns();
-
-            foreach (DevExpress.XtraGrid.Columns.GridColumn column in viewEtkinlikler.Columns)
-            {
-                column.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-                column.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                foreach (DevExpress.XtraGrid.Columns.GridColumn column in viewEtkinlikler.Columns)
+                {
+                    column.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                    column.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                }
             }
         }
         catch (Exception ex)
@@ -180,7 +196,7 @@ public partial class HosGeldinOgrenci : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 }

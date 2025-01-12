@@ -6,15 +6,15 @@ using DevExpress.XtraEditors;
 using DevExpress.XtraGrid;
 using DevExpress.XtraGrid.Views.Grid;
 using MySql.Data.MySqlClient;
+using OkulOtomasyon.Models;
 
 public partial class EtkinlikGoruntule : Form
 {
-    private MySqlConnection connection;
+    private DatabaseConnection dbConnection = DatabaseConnection.Instance;
 
     public EtkinlikGoruntule()
     {
         InitializeComponent();
-        connection = new MySqlConnection("Server=localhost;Database=okulotomasyon;Uid=root;Pwd=ulwus123;");
         this.Load += EtkinlikGoruntule_Load;
     }
 
@@ -27,28 +27,28 @@ public partial class EtkinlikGoruntule : Form
     {
         try
         {
-            connection.Open();
-            string query = @"SELECT 
+            using (var connection = dbConnection.GetConnection())
+            {
+                string query = @"SELECT 
                          etkinlikIsmi as 'Etkinlik',
                          DATE_FORMAT(etkinlikTarihi,'%d.%m.%Y') as 'Tarih',
                          etkinlikYeri as 'Yer',
                          etkinlikAciklama as 'Açıklama'
                          FROM etkinlik 
                          WHERE etkinlikTarihi >= CURDATE()
-                         ORDER BY etkinlikTarihi 
-                         ";
+                         ORDER BY etkinlikTarihi";
 
-            MySqlCommand cmd = new MySqlCommand(query, connection);
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                DataTable dt = new DataTable();
+                new MySqlDataAdapter(cmd).Fill(dt);
+                gridEtkinlikler.DataSource = dt;
+                viewEtkinlikler.BestFitColumns();
 
-            DataTable dt = new DataTable();
-            new MySqlDataAdapter(cmd).Fill(dt);
-            gridEtkinlikler.DataSource = dt;
-            viewEtkinlikler.BestFitColumns();
-
-            foreach (DevExpress.XtraGrid.Columns.GridColumn column in viewEtkinlikler.Columns)
-            {
-                column.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-                column.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                foreach (DevExpress.XtraGrid.Columns.GridColumn column in viewEtkinlikler.Columns)
+                {
+                    column.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                    column.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                }
             }
         }
         catch (Exception ex)
@@ -57,7 +57,7 @@ public partial class EtkinlikGoruntule : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 }

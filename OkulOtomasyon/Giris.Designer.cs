@@ -35,15 +35,15 @@
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panelControl1 = new DevExpress.XtraEditors.PanelControl();
-            this.svgImageBox3 = new DevExpress.XtraEditors.SvgImageBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.svgImageBox3 = new DevExpress.XtraEditors.SvgImageBox();
             this.textEdit2 = new DevExpress.XtraEditors.TextEdit();
             this.textEdit1 = new DevExpress.XtraEditors.TextEdit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.panelControl1)).BeginInit();
             this.panelControl1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.svgImageBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.svgImageBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.textEdit2.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.textEdit1.Properties)).BeginInit();
             this.SuspendLayout();
@@ -107,16 +107,6 @@
             this.panelControl1.Size = new System.Drawing.Size(519, 504);
             this.panelControl1.TabIndex = 0;
             // 
-            // svgImageBox3
-            // 
-            this.svgImageBox3.Location = new System.Drawing.Point(707, 41);
-            this.svgImageBox3.Name = "svgImageBox3";
-            this.svgImageBox3.Size = new System.Drawing.Size(161, 146);
-            this.svgImageBox3.SizeMode = DevExpress.XtraEditors.SvgImageSizeMode.Stretch;
-            this.svgImageBox3.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("svgImageBox3.SvgImage")));
-            this.svgImageBox3.TabIndex = 9;
-            this.svgImageBox3.Text = "svgImageBox3";
-            // 
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
@@ -128,6 +118,16 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
+            // 
+            // svgImageBox3
+            // 
+            this.svgImageBox3.Location = new System.Drawing.Point(707, 41);
+            this.svgImageBox3.Name = "svgImageBox3";
+            this.svgImageBox3.Size = new System.Drawing.Size(161, 146);
+            this.svgImageBox3.SizeMode = DevExpress.XtraEditors.SvgImageSizeMode.Stretch;
+            this.svgImageBox3.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("svgImageBox3.SvgImage")));
+            this.svgImageBox3.TabIndex = 9;
+            this.svgImageBox3.Text = "svgImageBox3";
             // 
             // textEdit2
             // 
@@ -171,8 +171,8 @@
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.panelControl1)).EndInit();
             this.panelControl1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.svgImageBox3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.svgImageBox3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.textEdit2.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.textEdit1.Properties)).EndInit();
             this.ResumeLayout(false);

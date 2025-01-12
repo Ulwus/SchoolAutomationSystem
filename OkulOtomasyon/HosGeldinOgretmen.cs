@@ -6,18 +6,22 @@ using MySql.Data.MySqlClient;
 using DevExpress.XtraEditors;
 using DevExpress.XtraGrid;
 using DevExpress.XtraGrid.Views.Grid;
+using OkulOtomasyon.Models;
 
 public partial class HosGeldinOgretmen : Form
 {
-    private MySqlConnection connection;
+    private DatabaseConnection dbConnection = DatabaseConnection.Instance;
     private int ogretmenID;
-
-    public HosGeldinOgretmen(int ogrID)
+    Account account;
+    Teacher teacher;
+    public HosGeldinOgretmen(Account account)
     {
         InitializeComponent();
-        ogretmenID = ogrID;
-        connection = new MySqlConnection("Server=localhost;Database=okulotomasyon;Uid=root;Pwd=ulwus123;");
+        this.account = account;
+        ogretmenID = account.UserAttachID;
+        
         this.Load += HosGeldinOgretmen_Load;
+        teacher = Teacher.GetById(account.UserAttachID);
 
         // Grid görünüm ayarları
         SetGridAppearance();
@@ -45,45 +49,20 @@ public partial class HosGeldinOgretmen : Form
 
     private void OgretmenBilgileriniGetir()
     {
-        try
-        {
-            connection.Open();
-            string query = @"SELECT 
-                         ogretmenIsim,
-                         ogretmenSoyisim,
-                         ogretmenBrans,
-                         ogretmenID
-                         FROM ogretmen 
-                         WHERE ogretmenID = @ogretmenID";
+        lblOgretmenAd.Text = teacher.OgretmenIsim + " " + teacher.OgretmenSoyisim;
+        lblBrans.Text = teacher.OgretmenBrans;
+        lblOgretmenNo.Text = Convert.ToString(teacher.OgretmenID);
 
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("@ogretmenID", ogretmenID);
-
-            MySqlDataReader reader = cmd.ExecuteReader();
-            if (reader.Read())
-            {
-                lblOgretmenAd.Text = $"{reader["ogretmenIsim"]} {reader["ogretmenSoyisim"]}";
-                lblBrans.Text = $"Branş: {reader["ogretmenBrans"]}";
-                lblOgretmenNo.Text = $"Sicil No: {reader["ogretmenID"]}";
-            }
-            reader.Close();
-        }
-        catch (Exception ex)
-        {
-            XtraMessageBox.Show("Hata: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-        finally
-        {
-            connection.Close();
-        }
+        
     }
 
     private void DersProgramiGetir()
     {
         try
         {
-            connection.Open();
-            string query = @"SELECT 
+            using (var connection = dbConnection.GetConnection())
+            {
+                string query = @"SELECT 
                          dp.gun as 'Gün',
                          TIME_FORMAT(dp.baslangicSaati,'%H:%i') as 'Başlangıç',
                          TIME_FORMAT(dp.bitisSaati,'%H:%i') as 'Bitiş',
@@ -95,16 +74,17 @@ public partial class HosGeldinOgretmen : Form
                          WHERE dp.ogretmenID = @ogretmenID
                          ORDER BY dp.gun, dp.baslangicSaati";
 
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("@ogretmenID", ogretmenID);
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@ogretmenID", ogretmenID);
 
-            MySqlDataAdapter da = new MySqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            gridDersProgrami.DataSource = dt;
+                MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                gridDersProgrami.DataSource = dt;
 
-            viewDersProgrami.Columns["Gün"].GroupIndex = 0;
-            viewDersProgrami.BestFitColumns();
+                viewDersProgrami.Columns["Gün"].GroupIndex = 0;
+                viewDersProgrami.BestFitColumns();
+            }
         }
         catch (Exception ex)
         {
@@ -112,7 +92,7 @@ public partial class HosGeldinOgretmen : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 
@@ -120,8 +100,9 @@ public partial class HosGeldinOgretmen : Form
     {
         try
         {
-            connection.Open();
-            string query = @"SELECT DISTINCT 
+            using (var connection = dbConnection.GetConnection())
+            {
+                string query = @"SELECT DISTINCT 
                          s.sinifName as 'Sınıf',
                          s.sinifStudentNumber as 'Öğrenci Sayısı',
                          s.sinifYear as 'Yıl'
@@ -130,14 +111,15 @@ public partial class HosGeldinOgretmen : Form
                          WHERE dp.ogretmenID = @ogretmenID
                          ORDER BY s.sinifName";
 
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("@ogretmenID", ogretmenID);
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@ogretmenID", ogretmenID);
 
-            MySqlDataAdapter da = new MySqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            gridSiniflar.DataSource = dt;
-            viewSiniflar.BestFitColumns();
+                MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                gridSiniflar.DataSource = dt;
+                viewSiniflar.BestFitColumns();
+            }
         }
         catch (Exception ex)
         {
@@ -145,7 +127,7 @@ public partial class HosGeldinOgretmen : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 

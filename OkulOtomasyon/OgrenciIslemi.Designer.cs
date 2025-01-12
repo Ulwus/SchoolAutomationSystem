@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            DevExpress.DataAccess.Sql.CustomSqlQuery customSqlQuery1 = new DevExpress.DataAccess.Sql.CustomSqlQuery();
+            DevExpress.DataAccess.Sql.CustomSqlQuery customSqlQuery2 = new DevExpress.DataAccess.Sql.CustomSqlQuery();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OgrenciIslemi));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.xtraTabControl1 = new DevExpress.XtraTab.XtraTabControl();
@@ -351,10 +351,10 @@
             // 
             this.sqlDataSource2.ConnectionName = "localhost_okulotomasyon_Connection";
             this.sqlDataSource2.Name = "sqlDataSource2";
-            customSqlQuery1.Name = "Query";
-            customSqlQuery1.Sql = "select * from ogrenci";
+            customSqlQuery2.Name = "Query";
+            customSqlQuery2.Sql = "select * from ogrenci";
             this.sqlDataSource2.Queries.AddRange(new DevExpress.DataAccess.Sql.SqlQuery[] {
-            customSqlQuery1});
+            customSqlQuery2});
             this.sqlDataSource2.ResultSchemaSerializable = resources.GetString("sqlDataSource2.ResultSchemaSerializable");
             // 
             // gridView1

@@ -9,15 +9,16 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using DevExpress.XtraBars;
 using MySql.Data.MySqlClient;
+using OkulOtomasyon.Models;
 
 namespace OkulOtomasyon
 {
     public partial class Panel : DevExpress.XtraBars.Ribbon.RibbonForm
     {
-        int userID;
-        public Panel(int userID)
+        Account account;
+        public Panel(Account account)
         {
-            this.userID = userID;
+            this.account = account;
             InitializeComponent();
             
         }
@@ -34,33 +35,10 @@ namespace OkulOtomasyon
 
         private void barButtonItem11_ItemClick(object sender, ItemClickEventArgs e)
         {
-            NotIslemi notIslemi = new NotIslemi(GetUserID());
+            NotIslemi notIslemi = new NotIslemi(account);
             notIslemi.MdiParent = this;
             notIslemi.Show();
 
-        }
-
-        private int GetUserID()
-        {
-            int ogrenciID = 0;
-            string connectionString = "Server=localhost;Database=okulotomasyon;Uid=root;Pwd=ulwus123;";
-
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                conn.Open();
-                string query = "SELECT userAttachID FROM account WHERE userId = @userId";
-
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@userId", userID);
-                    object result = cmd.ExecuteScalar();
-                    if (result != null)
-                    {
-                        ogrenciID = Convert.ToInt32(result);
-                    }
-                }
-            }
-            return ogrenciID;
         }
 
         private void Panel_Load(object sender, EventArgs e)
@@ -69,20 +47,19 @@ namespace OkulOtomasyon
             ribbonPage3.Visible = false;
             ribbonPage4.Visible = false;
 
-            int userPermission = GetUserPermissionFromDB();
+            int userPermission = account.UserPermission;
             switch (userPermission)
             {
                 case 0:
                     ribbonPage4.Visible = true;
-                    int ogrenciID = GetUserID();
-                    HosGeldinOgrenci hosGeldinOgrenci = new HosGeldinOgrenci(ogrenciID);
+                    
+                    HosGeldinOgrenci hosGeldinOgrenci = new HosGeldinOgrenci(account);
                     hosGeldinOgrenci.MdiParent = this;
                     hosGeldinOgrenci.Show();
                     break;
                 case 1:
                     ribbonPage2.Visible = true;
-                    int ogretmenID = GetUserID();
-                    HosGeldinOgretmen hosGeldinOgretmen = new HosGeldinOgretmen(ogretmenID);
+                    HosGeldinOgretmen hosGeldinOgretmen = new HosGeldinOgretmen(account);
                     hosGeldinOgretmen.MdiParent = this;
                     hosGeldinOgretmen.Show();
 
@@ -98,29 +75,7 @@ namespace OkulOtomasyon
 
         }
 
-        private int GetUserPermissionFromDB()
-        {
-            int permission = 0;
-            string connectionString = "Server=localhost;Database=okulotomasyon;Uid=root;Pwd=ulwus123;";
 
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                conn.Open();
-                string query = "SELECT userPermission FROM account WHERE userId = @userId";
-
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@userId", userID); 
-                    object result = cmd.ExecuteScalar();
-                    if (result != null)
-                    {
-                        permission = Convert.ToInt32(result);
-                    }
-                }
-            }
-
-            return permission;
-        }
 
         private void barButtonItem17_ItemClick(object sender, ItemClickEventArgs e)
         {
@@ -178,14 +133,14 @@ namespace OkulOtomasyon
 
         private void barButtonItem14_ItemClick(object sender, ItemClickEventArgs e)
         {
-            DersProgramiGoruntuleOgrenci dersProgramiGoruntule = new DersProgramiGoruntuleOgrenci(GetUserID());
+            DersProgramiGoruntuleOgrenci dersProgramiGoruntule = new DersProgramiGoruntuleOgrenci(account);
             dersProgramiGoruntule.MdiParent = this;
             dersProgramiGoruntule.Show();
         }
 
         private void barButtonItem13_ItemClick(object sender, ItemClickEventArgs e)
         {
-            DersProgramiGoruntuleOgretmen dersProgramiGoruntuleOgretmen = new DersProgramiGoruntuleOgretmen(GetUserID());
+            DersProgramiGoruntuleOgretmen dersProgramiGoruntuleOgretmen = new DersProgramiGoruntuleOgretmen(account);
             dersProgramiGoruntuleOgretmen.MdiParent = this;
             dersProgramiGoruntuleOgretmen.Show();
         }
@@ -199,7 +154,7 @@ namespace OkulOtomasyon
 
         private void barButtonItem41_ItemClick(object sender, ItemClickEventArgs e)
         {
-            DevamsizlikGoruntulemeOgrenci devamsizlikGoruntulemeOgrenci = new DevamsizlikGoruntulemeOgrenci(GetUserID());
+            DevamsizlikGoruntulemeOgrenci devamsizlikGoruntulemeOgrenci = new DevamsizlikGoruntulemeOgrenci(account);
             devamsizlikGoruntulemeOgrenci.MdiParent = this;
             devamsizlikGoruntulemeOgrenci.Show();
         }
@@ -213,27 +168,25 @@ namespace OkulOtomasyon
 
         private void barButtonItem15_ItemClick(object sender, ItemClickEventArgs e)
         {
-            NotGoruntulemeOgrenci notGoruntulemeOgrenci = new NotGoruntulemeOgrenci(GetUserID());
+            NotGoruntulemeOgrenci notGoruntulemeOgrenci = new NotGoruntulemeOgrenci(account);
             notGoruntulemeOgrenci.MdiParent = this;
             notGoruntulemeOgrenci.Show();
         }
 
         private void barButtonItem40_ItemClick(object sender, ItemClickEventArgs e)
         {
-            int userPermission = GetUserPermissionFromDB();
+            int userPermission = account.UserPermission;
             switch (userPermission)
             {
                 case 0:
                     ribbonPage4.Visible = true;
-                    int ogrenciID = GetUserID();
-                    HosGeldinOgrenci hosGeldinOgrenci = new HosGeldinOgrenci(ogrenciID);
+                    HosGeldinOgrenci hosGeldinOgrenci = new HosGeldinOgrenci(account);
                     hosGeldinOgrenci.MdiParent = this;
                     hosGeldinOgrenci.Show();
                     break;
                 case 1:
                     ribbonPage2.Visible = true;
-                    int ogretmenID = GetUserID();
-                    HosGeldinOgretmen hosGeldinOgretmen = new HosGeldinOgretmen(ogretmenID);
+                    HosGeldinOgretmen hosGeldinOgretmen = new HosGeldinOgretmen(account);
                     hosGeldinOgretmen.MdiParent = this;
                     hosGeldinOgretmen.Show();
 
@@ -249,7 +202,7 @@ namespace OkulOtomasyon
 
         private void barButtonItem44_ItemClick(object sender, ItemClickEventArgs e)
         {
-            DevamsizlikIslemi devamsizlikIslemi = new DevamsizlikIslemi(GetUserID());
+            DevamsizlikIslemi devamsizlikIslemi = new DevamsizlikIslemi(account);
             devamsizlikIslemi.MdiParent = this;
             devamsizlikIslemi.Show();
         }

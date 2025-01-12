@@ -5,16 +5,16 @@ using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using DevExpress.XtraEditors;
 using DevExpress.XtraGrid.Views.Grid;
+using OkulOtomasyon.Models;
 
 public partial class DersProgramiGoruntule : Form
 {
-    private MySqlConnection connection;
+    private DatabaseConnection dbConnection = DatabaseConnection.Instance;
     private string selectedSinif;
 
     public DersProgramiGoruntule()
     {
         InitializeComponent();
-        connection = new MySqlConnection("Server=localhost;Database=okulotomasyon;Uid=root;Pwd=ulwus123;");
 
         this.Load += DersProgramiGoruntule_Load;
         btnFiltrele.Click += BtnFiltrele_Click;
@@ -43,15 +43,16 @@ public partial class DersProgramiGoruntule : Form
     {
         try
         {
-            connection.Open();
-            string query = "SELECT sinifName FROM sinif ORDER BY sinifName";
-
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            MySqlDataReader reader = cmd.ExecuteReader();
-
-            while (reader.Read())
+            using (var connection = dbConnection.GetConnection())
             {
-                cmbSinif.Properties.Items.Add(reader["sinifName"].ToString());
+                string query = "SELECT sinifName FROM sinif ORDER BY sinifName";
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    cmbSinif.Properties.Items.Add(reader["sinifName"].ToString());
+                }
             }
         }
         catch (Exception ex)
@@ -60,7 +61,7 @@ public partial class DersProgramiGoruntule : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 
@@ -68,8 +69,9 @@ public partial class DersProgramiGoruntule : Form
     {
         try
         {
-            connection.Open();
-            string query = @"SELECT 
+            using (var connection = dbConnection.GetConnection())
+            {
+                string query = @"SELECT 
                          dp.gun as 'Gün',
                          TIME_FORMAT(dp.baslangicSaati,'%H:%i') as 'Başlangıç',
                          TIME_FORMAT(dp.bitisSaati,'%H:%i') as 'Bitiş',
@@ -81,27 +83,28 @@ public partial class DersProgramiGoruntule : Form
                          JOIN ogretmen o ON dp.ogretmenID = o.ogretmenID
                          JOIN sinif s ON dp.sinifID = s.sinifID";
 
-            if (!string.IsNullOrEmpty(sinifFilter))
-            {
-                query += " WHERE s.sinifName = @sinifName";
+                if (!string.IsNullOrEmpty(sinifFilter))
+                {
+                    query += " WHERE s.sinifName = @sinifName";
+                }
+
+                query += " ORDER BY dp.gun, dp.baslangicSaati";
+
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+
+                if (!string.IsNullOrEmpty(sinifFilter))
+                {
+                    cmd.Parameters.AddWithValue("@sinifName", sinifFilter);
+                }
+
+                MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                gridDersProgrami.DataSource = dt;
+                viewDersProgrami.Columns["Gün"].GroupIndex = 0;
+                viewDersProgrami.BestFitColumns();
             }
-
-            query += " ORDER BY dp.gun, dp.baslangicSaati";
-
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-
-            if (!string.IsNullOrEmpty(sinifFilter))
-            {
-                cmd.Parameters.AddWithValue("@sinifName", sinifFilter);
-            }
-
-            MySqlDataAdapter da = new MySqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-
-            gridDersProgrami.DataSource = dt;
-            viewDersProgrami.Columns["Gün"].GroupIndex = 0;
-            viewDersProgrami.BestFitColumns();
         }
         catch (Exception ex)
         {
@@ -109,7 +112,7 @@ public partial class DersProgramiGoruntule : Form
         }
         finally
         {
-            connection.Close();
+            dbConnection.CloseConnection();
         }
     }
 

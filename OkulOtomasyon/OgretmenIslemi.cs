@@ -1,13 +1,14 @@
-﻿using MySql.Data.MySqlClient;
+using MySql.Data.MySqlClient;
 using System;
 using System.Data;
 using System.Windows.Forms;
+using OkulOtomasyon.Models;
 
 namespace OkulOtomasyon
 {
     public partial class OgretmenIslemi : Form
     {
-        MySqlConnection connection = new MySqlConnection("Server=localhost;Database=okulotomasyon;Uid=root;Pwd=ulwus123;");
+        private DatabaseConnection dbConnection = DatabaseConnection.Instance;
 
         public OgretmenIslemi()
         {
@@ -17,11 +18,14 @@ namespace OkulOtomasyon
 
         public void Listele()
         {
-            string komut = "SELECT * FROM ogretmen";
-            MySqlDataAdapter da = new MySqlDataAdapter(komut, connection);
-            DataSet ds = new DataSet();
-            da.Fill(ds);
-            gridControl1.DataSource = ds.Tables[0];
+            using (var connection = dbConnection.GetConnection())
+            {
+                string komut = "SELECT * FROM ogretmen";
+                MySqlDataAdapter da = new MySqlDataAdapter(komut, connection);
+                DataSet ds = new DataSet();
+                da.Fill(ds);
+                gridControl1.DataSource = ds.Tables[0];
+            }
         }
 
         private void OgretmenIslemi_Load(object sender, EventArgs e)
@@ -29,13 +33,10 @@ namespace OkulOtomasyon
             Listele();
         }
 
-        private void simpleButton1_Click_1  (object sender, EventArgs e)
+        private void simpleButton1_Click_1(object sender, EventArgs e)
         {
             Ekle();
         }
-
-
-
 
         private void gridControl1_Click(object sender, EventArgs e)
         {
@@ -53,37 +54,37 @@ namespace OkulOtomasyon
         {
             try
             {
-                if (connection.State != ConnectionState.Open)
-                    connection.Open();
-
-                int ogretmenID = -1;
-
-                using (MySqlCommand cmd = new MySqlCommand(
-                    "INSERT INTO ogretmen (ogretmenIsim, ogretmenSoyisim, ogretmenTelefon, ogretmenEmail, ogretmenBrans, ogretmenIseBaslamaTarihi) VALUES " +
-                    "(@ogretmenIsim, @ogretmenSoyisim, @ogretmenTelefon, @ogretmenEmail, @ogretmenBrans, @ogretmenIseBaslamaTarihi); SELECT LAST_INSERT_ID();",
-                    connection))
+                using (var connection = dbConnection.GetConnection())
                 {
-                    cmd.Parameters.AddWithValue("@ogretmenIsim", textEdit1.Text);
-                    cmd.Parameters.AddWithValue("@ogretmenSoyisim", textEdit2.Text);
-                    cmd.Parameters.AddWithValue("@ogretmenTelefon", textEdit3.Text);
-                    cmd.Parameters.AddWithValue("@ogretmenEmail", textEdit4.Text);
-                    cmd.Parameters.AddWithValue("@ogretmenBrans", comboBoxEdit1.Text);
-                    cmd.Parameters.AddWithValue("@ogretmenIseBaslamaTarihi", DateTime.Now);
+                    int ogretmenID = -1;
 
-                    ogretmenID = Convert.ToInt32(cmd.ExecuteScalar());
-                }
+                    using (MySqlCommand cmd = new MySqlCommand(
+                        "INSERT INTO ogretmen (ogretmenIsim, ogretmenSoyisim, ogretmenTelefon, ogretmenEmail, ogretmenBrans, ogretmenIseBaslamaTarihi) VALUES " +
+                        "(@ogretmenIsim, @ogretmenSoyisim, @ogretmenTelefon, @ogretmenEmail, @ogretmenBrans, @ogretmenIseBaslamaTarihi); SELECT LAST_INSERT_ID();",
+                        connection))
+                    {
+                        cmd.Parameters.AddWithValue("@ogretmenIsim", textEdit1.Text);
+                        cmd.Parameters.AddWithValue("@ogretmenSoyisim", textEdit2.Text);
+                        cmd.Parameters.AddWithValue("@ogretmenTelefon", textEdit3.Text);
+                        cmd.Parameters.AddWithValue("@ogretmenEmail", textEdit4.Text);
+                        cmd.Parameters.AddWithValue("@ogretmenBrans", comboBoxEdit1.Text);
+                        cmd.Parameters.AddWithValue("@ogretmenIseBaslamaTarihi", DateTime.Now);
 
-                using (MySqlCommand cmdAccount = new MySqlCommand(
-                    "INSERT INTO account (userName, userPassword, userPermission, userAttachID) VALUES " +
-                    "(@userName, @userPassword, @userPermission, @userAttachID)", connection))
-                {
-                    cmdAccount.Parameters.AddWithValue("@userName", textEdit3.Text);
-                    cmdAccount.Parameters.AddWithValue("@userPassword", "123456");
-                    cmdAccount.Parameters.AddWithValue("@userPermission", 1);
-                    cmdAccount.Parameters.AddWithValue("@userAttachID", ogretmenID);
+                        ogretmenID = Convert.ToInt32(cmd.ExecuteScalar());
+                    }
 
-                    cmdAccount.ExecuteNonQuery();
-                    MessageBox.Show("Öğretmen başarıyla eklendi!");
+                    using (MySqlCommand cmdAccount = new MySqlCommand(
+                        "INSERT INTO account (userName, userPassword, userPermission, userAttachID) VALUES " +
+                        "(@userName, @userPassword, @userPermission, @userAttachID)", connection))
+                    {
+                        cmdAccount.Parameters.AddWithValue("@userName", textEdit3.Text);
+                        cmdAccount.Parameters.AddWithValue("@userPassword", "123456");
+                        cmdAccount.Parameters.AddWithValue("@userPermission", 1);
+                        cmdAccount.Parameters.AddWithValue("@userAttachID", ogretmenID);
+
+                        cmdAccount.ExecuteNonQuery();
+                        MessageBox.Show("Öğretmen başarıyla eklendi!");
+                    }
                 }
             }
             catch (Exception ex)
@@ -92,32 +93,32 @@ namespace OkulOtomasyon
             }
             finally
             {
-                connection.Close();
+                dbConnection.CloseConnection();
                 Listele();
             }
         }
 
         public void Guncelle()
         {
-             try
+            try
             {
-                if (connection.State != ConnectionState.Open)
-                    connection.Open();
-
-                using (MySqlCommand cmd = new MySqlCommand(
-                    "UPDATE ogretmen SET ogretmenIsim=@isim, ogretmenSoyisim=@soyisim, " +
-                    "ogretmenTelefon=@telefon, ogretmenEmail=@email, ogretmenBrans=@brans " +
-                    "WHERE ogretmenID=@id", connection))
+                using (var connection = dbConnection.GetConnection())
                 {
-                    cmd.Parameters.AddWithValue("@id", gridView1.GetFocusedRowCellValue("ogretmenID"));
-                    cmd.Parameters.AddWithValue("@isim", textEdit1.Text);
-                    cmd.Parameters.AddWithValue("@soyisim", textEdit2.Text);
-                    cmd.Parameters.AddWithValue("@telefon", textEdit3.Text);
-                    cmd.Parameters.AddWithValue("@email", textEdit4.Text);
-                    cmd.Parameters.AddWithValue("@brans", comboBoxEdit1.Text);
+                    using (MySqlCommand cmd = new MySqlCommand(
+                        "UPDATE ogretmen SET ogretmenIsim=@isim, ogretmenSoyisim=@soyisim, " +
+                        "ogretmenTelefon=@telefon, ogretmenEmail=@email, ogretmenBrans=@brans " +
+                        "WHERE ogretmenID=@id", connection))
+                    {
+                        cmd.Parameters.AddWithValue("@id", gridView1.GetFocusedRowCellValue("ogretmenID"));
+                        cmd.Parameters.AddWithValue("@isim", textEdit1.Text);
+                        cmd.Parameters.AddWithValue("@soyisim", textEdit2.Text);
+                        cmd.Parameters.AddWithValue("@telefon", textEdit3.Text);
+                        cmd.Parameters.AddWithValue("@email", textEdit4.Text);
+                        cmd.Parameters.AddWithValue("@brans", comboBoxEdit1.Text);
 
-                    cmd.ExecuteNonQuery();
-                    MessageBox.Show("Öğretmen bilgileri güncellendi!");
+                        cmd.ExecuteNonQuery();
+                        MessageBox.Show("Öğretmen bilgileri güncellendi!");
+                    }
                 }
             }
             catch (Exception ex)
@@ -126,11 +127,10 @@ namespace OkulOtomasyon
             }
             finally
             {
-                connection.Close();
+                dbConnection.CloseConnection();
                 Listele();
             }
         }
-
 
         public void Sil()
         {
@@ -147,14 +147,16 @@ namespace OkulOtomasyon
 
                 if (dr == DialogResult.Yes)
                 {
-                    connection.Open();
-                    string ogretmenID = gridView1.GetFocusedRowCellValue("ogretmenID").ToString();
-
-                    using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ogretmen WHERE ogretmenID = @id", connection))
+                    using (var connection = dbConnection.GetConnection())
                     {
-                        cmd.Parameters.AddWithValue("@id", ogretmenID);
-                        cmd.ExecuteNonQuery();
-                        MessageBox.Show("Öğretmen başarıyla silindi!");
+                        string ogretmenID = gridView1.GetFocusedRowCellValue("ogretmenID").ToString();
+
+                        using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ogretmen WHERE ogretmenID = @id", connection))
+                        {
+                            cmd.Parameters.AddWithValue("@id", ogretmenID);
+                            cmd.ExecuteNonQuery();
+                            MessageBox.Show("Öğretmen başarıyla silindi!");
+                        }
                     }
                 }
             }
@@ -164,7 +166,7 @@ namespace OkulOtomasyon
             }
             finally
             {
-                connection.Close();
+                dbConnection.CloseConnection();
                 Listele();
             }
         }
