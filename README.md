@@ -1,5 +1,6 @@
 
 # School Automation System
+## [Project Document](https://github.com/user-attachments/files/18400447/document.pdf)
 
 ---
 
