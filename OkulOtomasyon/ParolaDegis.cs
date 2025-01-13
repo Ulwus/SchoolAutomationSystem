@@ -58,14 +58,16 @@ namespace OkulOtomasyon
 
             try
             {
-                // Using the Account class's ChangePassword method which already uses DatabaseConnection
                 if (account.ChangePassword(txtEskiParola.Text, txtYeniParola1.Text))
                 {
                     XtraMessageBox.Show("Şifre Başarıyla Değiştirildi", "Onay",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                     Panel panel = new Panel(account);
+                    panel.FormClosed += (s, args) => this.Close(); // Panel kapandığında bu formu da kapat
+                    account.UserPassword = txtYeniParola1.Text;
                     panel.Show();
                     this.Close();
+                    
                 }
                 else
                 {

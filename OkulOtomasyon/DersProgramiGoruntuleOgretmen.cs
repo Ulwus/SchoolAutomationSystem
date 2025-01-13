@@ -34,8 +34,8 @@ public partial class DersProgramiGoruntuleOgretmen : Form
     private void OgretmenBilgileriniGetir()
     {
 
-        lblOgretmenAd.Text = teacher.OgretmenIsim + " " + teacher.OgretmenSoyisim;
-        lblBrans.Text = teacher.OgretmenBrans;
+        lblOgretmenAd.Text = "Öğretmen İsmi: " + teacher.OgretmenIsim + " " + teacher.OgretmenSoyisim;
+        lblBrans.Text = "Öğrenmen Branşı: " + teacher.OgretmenBrans;
         try
         {
             using (var connection = dbConnection.GetConnection())

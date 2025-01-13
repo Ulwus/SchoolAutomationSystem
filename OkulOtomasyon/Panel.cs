@@ -20,9 +20,12 @@ namespace OkulOtomasyon
         {
             this.account = account;
             InitializeComponent();
-            
+            this.FormClosing += Panel_FormClosing;
         }
-
+        private void Panel_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Application.Exit();
+        }
         private void barButtonItem5_ItemClick(object sender, ItemClickEventArgs e)
         {
 

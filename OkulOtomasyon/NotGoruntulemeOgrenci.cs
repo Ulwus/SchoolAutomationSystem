@@ -33,9 +33,9 @@ public partial class NotGoruntulemeOgrenci : Form
     private void OgrenciBilgileriniGetir()
     {
 
-        lblOgrenciAd.Text = student.OgrenciIsmi + " " + student.OgrenciSoyismi;
-        lblSinif.Text = Convert.ToString(student.OgrenciSinif);
-        lblOgrenciNo.Text = Convert.ToString(student.OgrenciID);
+        lblOgrenciAd.Text = "Öğrenci İsmi: " + student.OgrenciIsmi + " " + student.OgrenciSoyismi;
+        lblSinif.Text = "Öğrenci Sınıfı: " + Convert.ToString(student.OgrenciSinif);
+        lblOgrenciNo.Text = "Öğrenci Numarası: " + Convert.ToString(student.OgrenciID);
         try
         {
             using (var connection = dbConnection.GetConnection())

@@ -49,9 +49,9 @@ public partial class HosGeldinOgretmen : Form
 
     private void OgretmenBilgileriniGetir()
     {
-        lblOgretmenAd.Text = teacher.OgretmenIsim + " " + teacher.OgretmenSoyisim;
-        lblBrans.Text = teacher.OgretmenBrans;
-        lblOgretmenNo.Text = Convert.ToString(teacher.OgretmenID);
+        lblOgretmenAd.Text = "Öğretmen İsmi: "+teacher.OgretmenIsim + " " + teacher.OgretmenSoyisim;
+        lblBrans.Text = "Öğrenmen Branşı: "+teacher.OgretmenBrans;
+        lblOgretmenNo.Text = "Sicil No: "+Convert.ToString(teacher.OgretmenID);
 
         
     }
