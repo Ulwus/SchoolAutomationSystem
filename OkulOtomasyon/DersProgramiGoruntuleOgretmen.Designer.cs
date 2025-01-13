@@ -37,6 +37,7 @@ partial class DersProgramiGoruntuleOgretmen
             this.grpDersProgrami = new DevExpress.XtraEditors.GroupControl();
             this.gridDersProgrami = new DevExpress.XtraGrid.GridControl();
             this.viewDersProgrami = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.simpleButton1 = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.pnlUst)).BeginInit();
             this.pnlUst.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grpOgretmenBilgi)).BeginInit();
@@ -76,6 +77,7 @@ partial class DersProgramiGoruntuleOgretmen
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpOgretmenBilgi.Appearance.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.grpOgretmenBilgi.Appearance.Options.UseFont = true;
+            this.grpOgretmenBilgi.Controls.Add(this.simpleButton1);
             this.grpOgretmenBilgi.Controls.Add(this.lblOgretmenAd);
             this.grpOgretmenBilgi.Controls.Add(this.lblBrans);
             this.grpOgretmenBilgi.Controls.Add(this.lblDersSayisi);
@@ -138,6 +140,16 @@ partial class DersProgramiGoruntuleOgretmen
             this.viewDersProgrami.OptionsBehavior.Editable = false;
             this.viewDersProgrami.OptionsView.ShowGroupPanel = false;
             // 
+            // simpleButton1
+            // 
+            this.simpleButton1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.simpleButton1.Location = new System.Drawing.Point(1009, 20);
+            this.simpleButton1.Name = "simpleButton1";
+            this.simpleButton1.Size = new System.Drawing.Size(151, 80);
+            this.simpleButton1.TabIndex = 4;
+            this.simpleButton1.Text = "Pdf Çıktısı Al";
+            this.simpleButton1.Click += new System.EventHandler(this.simpleButton1_Click);
+            // 
             // DersProgramiGoruntuleOgretmen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -163,4 +175,6 @@ partial class DersProgramiGoruntuleOgretmen
             this.ResumeLayout(false);
 
     }
+
+    private SimpleButton simpleButton1;
 }

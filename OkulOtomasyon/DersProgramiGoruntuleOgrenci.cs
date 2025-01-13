@@ -85,4 +85,29 @@ public partial class DersProgramiGoruntuleOgrenci : Form
             dbConnection.CloseConnection();
         }
     }
+
+    private void simpleButton1_Click(object sender, EventArgs e)
+    {
+
+        try
+        {
+            using (SaveFileDialog saveDialog = new SaveFileDialog())
+            {
+                saveDialog.Filter = "PDF dosyası (*.pdf)|*.pdf";
+                saveDialog.FileName = $"Ders_Programi_{DateTime.Now:yyyyMMdd}.pdf";
+
+                if (saveDialog.ShowDialog() == DialogResult.OK)
+                {
+                    gridDersProgrami.ExportToPdf(saveDialog.FileName);
+                    XtraMessageBox.Show("PDF dosyası başarıyla kaydedildi.", "Bilgi",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            XtraMessageBox.Show("PDF oluşturulurken hata oluştu: " + ex.Message, "Hata",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
 }

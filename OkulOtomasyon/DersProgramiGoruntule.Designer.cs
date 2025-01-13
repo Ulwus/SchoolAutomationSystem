@@ -30,6 +30,7 @@ partial class DersProgramiGoruntule
             this.grpDersProgrami = new DevExpress.XtraEditors.GroupControl();
             this.gridDersProgrami = new DevExpress.XtraGrid.GridControl();
             this.viewDersProgrami = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.simpleButton1 = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.pnlUst)).BeginInit();
             this.pnlUst.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grpFiltre)).BeginInit();
@@ -72,6 +73,7 @@ partial class DersProgramiGoruntule
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpFiltre.Appearance.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.grpFiltre.Appearance.Options.UseFont = true;
+            this.grpFiltre.Controls.Add(this.simpleButton1);
             this.grpFiltre.Controls.Add(this.lblSinif);
             this.grpFiltre.Controls.Add(this.cmbSinif);
             this.grpFiltre.Controls.Add(this.btnFiltrele);
@@ -156,6 +158,16 @@ partial class DersProgramiGoruntule
             this.viewDersProgrami.OptionsView.EnableAppearanceOddRow = true;
             this.viewDersProgrami.OptionsView.ShowGroupPanel = false;
             // 
+            // simpleButton1
+            // 
+            this.simpleButton1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.simpleButton1.Location = new System.Drawing.Point(1023, 20);
+            this.simpleButton1.Name = "simpleButton1";
+            this.simpleButton1.Size = new System.Drawing.Size(137, 60);
+            this.simpleButton1.TabIndex = 3;
+            this.simpleButton1.Text = "Pdf Çıktısı Al";
+            this.simpleButton1.Click += new System.EventHandler(this.simpleButton1_Click);
+            // 
             // DersProgramiGoruntule
             // 
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
@@ -191,4 +203,6 @@ partial class DersProgramiGoruntule
         }
         base.Dispose(disposing);
     }
+
+    private SimpleButton simpleButton1;
 }
